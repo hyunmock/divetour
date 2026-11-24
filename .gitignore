@@ -1,0 +1,32 @@
+# macOS 시스템 파일
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+
+# 볼륨 루트에 생기는 파일
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# 네트워크 공유 볼륨에 생기는 파일
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# iCloud 동기화 임시 파일
+*.icloud
+
+# 편집기 임시 파일
+*~
+*.swp
+*.swo
+.vscode/
+.idea/
