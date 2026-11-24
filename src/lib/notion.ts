@@ -18,6 +18,8 @@ const lines = z.enum([
   "numbered_list_item",
   "quote",
   "divider",
+  "callout",
+  "table_row",
 ]);
 export type Line = { kind: z.infer<typeof lines>; text: string };
 const title = z
@@ -122,9 +124,18 @@ export async function readNotion(
     );
     const result: Line[] = [];
     for (const b of blocks) {
+      if (b.type === "table") {
+        result.push(...(await body(b.id)));
+        continue;
+      }
       const kind = lines.parse(b.type);
-      const content = kind === "divider" ? "" : rich.parse(b[kind]);
-      result.push({ kind, text: content });
+      if (kind === "table_row") {
+        const row = z.object({ cells: z.array(text) }).parse(b.table_row);
+        result.push({ kind, text: row.cells.join(" · ") });
+      } else {
+        const content = kind === "divider" ? "" : rich.parse(b[kind]);
+        result.push({ kind, text: content });
+      }
       if (b.has_children) result.push(...(await body(b.id)));
     }
     return result;
