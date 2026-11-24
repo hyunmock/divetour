@@ -6,10 +6,8 @@ interface Props {
 }
 const { title } = Astro.props;
 const links = [
-  ["모임 소개", "about/"],
-  ["가입 안내", "join/"],
+  ["모임 안내", "about/"],
   ["투어", "tours/"],
-  ["사진·영상", "media/"],
   ["회칙", "rules/"],
   ["FAQ", "faq/"],
 ];
@@ -56,7 +54,7 @@ const links = [
         <a class="brand" href={href()}>
           다이빙투어 모임
         </a>
-        <a href={href("join/")}>가입 안내</a>
+        <a href={href("about/")}>모임 안내</a>
       </div>
     </footer>
   </body>

@@ -148,9 +148,7 @@ origin/main
 생성한 일반 페이지:
 
 - [홈페이지 관리](https://app.notion.com/p/422fb09f8fa981b7b12eda9a9edf1a7a)
-  - [모임 소개](https://app.notion.com/p/422fb09f8fa981bb825fdb887bffcb54)
-  - [가입 안내](https://app.notion.com/p/422fb09f8fa981e19c4aeafd85411a9b)
-  - [홈페이지 공지](https://app.notion.com/p/422fb09f8fa9813298e2e562cfb954f6)
+  - [모임 안내 (가입 안내 포함)](https://app.notion.com/p/422fb09f8fa981bb825fdb887bffcb54)
 - [회칙](https://app.notion.com/p/422fb09f8fa9812a9541d9837fb10c4f)
 - [콘텐츠 운영 안내](https://app.notion.com/p/422fb09f8fa981eba197c9ab976fc309)
 
@@ -352,7 +350,7 @@ NOTION_JOIN_PAGE_ID=
 
 - 홈, 모임 소개, 가입 안내
 - 투어 목록, 예정 투어, 완료 투어와 상세 페이지
-- 회칙, FAQ, 사진·영상 페이지
+- 회칙, FAQ 페이지와 개별 투어의 사진·영상 링크
 - Header, Footer, TourCard, MediaCard 등 공통 컴포넌트
 - 모바일 우선 반응형과 키보드 접근성
 

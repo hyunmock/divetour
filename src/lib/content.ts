@@ -10,7 +10,6 @@ export function content() {
         "FAQ_DATABASE_ID",
         "MEDIA_DATABASE_ID",
         "ABOUT_PAGE_ID",
-        "JOIN_PAGE_ID",
         "RULES_PAGE_ID",
       ].map((s) => {
         const key = "NOTION_" + s;

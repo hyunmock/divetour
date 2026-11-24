@@ -231,7 +231,6 @@ export async function readNotion(
     faq: faq.sort((a, b) => a.order - b.order),
     media: media.sort((a, b) => a.order - b.order),
     about: await page("NOTION_ABOUT_PAGE_ID"),
-    join: await page("NOTION_JOIN_PAGE_ID"),
     rules: await page("NOTION_RULES_PAGE_ID"),
   };
 }

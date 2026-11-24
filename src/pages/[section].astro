@@ -1,30 +1,25 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Body from "../components/Body.astro";
-import MediaList from "../components/MediaList.astro";
 import { content } from "../lib/content";
 export function getStaticPaths() {
-  return (["about", "join", "rules", "faq", "media"] as const).map(
+  return (["about", "rules", "faq"] as const).map(
     (section) => ({ params: { section }, props: { section } }),
   );
 }
 const { section } = Astro.props;
 const titles = {
-  about: "모임 소개",
-  join: "가입 안내",
+  about: "모임 안내",
   rules: "회칙",
   faq: "자주 묻는 질문",
-  media: "사진·영상",
 };
 const data = await content();
-const lines = section === "faq" || section === "media" ? [] : data[section];
+const lines = section === "faq" ? [] : data[section];
 ---
 
 <BaseLayout title={titles[section]}>
   <h1>{titles[section]}</h1>
-  {section === "media" ? (
-    <MediaList items={data.media} />
-  ) : section === "faq" ? (
+  {section === "faq" ? (
     data.faq.length ? (
       data.faq.map((f) => (
         <details>
