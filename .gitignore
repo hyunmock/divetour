@@ -30,3 +30,12 @@ Temporary Items
 *.swo
 .vscode/
 .idea/
+
+# 로컬 환경 변수와 빌드 결과
+!AGENTS.md
+.env
+.env.*
+!.env.example
+node_modules/
+dist/
+.astro/
