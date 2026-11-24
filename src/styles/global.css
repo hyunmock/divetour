@@ -1,0 +1,29 @@
+:root {
+  --sea: #073d50;
+  --foam: #e3f2ee;
+  font-family: system-ui, sans-serif;
+  color: var(--sea);
+  background: var(--foam);
+}
+
+body {
+  margin: 0;
+}
+
+main {
+  box-sizing: border-box;
+  min-height: 100svh;
+  display: grid;
+  align-content: center;
+  padding: clamp(1.5rem, 8vw, 7rem);
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(2.2rem, 7vw, 6rem);
+  letter-spacing: -0.04em;
+}
+
+p {
+  line-height: 1.6;
+}
