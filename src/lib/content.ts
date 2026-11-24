@@ -9,7 +9,6 @@ export function content() {
         "TOKEN",
         "TOURS_DATABASE_ID",
         "FAQ_DATABASE_ID",
-        "MEDIA_DATABASE_ID",
         "ABOUT_PAGE_ID",
         "RULES_PAGE_ID",
       ].map((s) => {

@@ -1,0 +1,9 @@
+---
+import type { Line } from "../lib/notion";
+const { line } = Astro.props as { line: Line };
+---
+{(line.parts ?? [{ text: line.text }]).map((part) =>
+  part.href ? (
+    <a href={part.href} target="_blank" rel="nofollow noopener noreferrer">{part.text}</a>
+  ) : part.text
+)}

@@ -7,7 +7,6 @@ const env = {
   NOTION_TOKEN: "test-only",
   NOTION_TOURS_DATABASE_ID: id(1),
   NOTION_FAQ_DATABASE_ID: id(2),
-  NOTION_MEDIA_DATABASE_ID: id(3),
 };
 const title = (plain_text) => ({ title: [{ plain_text }] });
 const rich = (plain_text) => ({ rich_text: [{ plain_text }] });
@@ -25,19 +24,6 @@ function tour(n, state, visible, archive) {
     },
   };
 }
-function media(n, tourId, expiry) {
-  return {
-    id: id(n),
-    properties: {
-      제목: title("앨범 " + n),
-      "공개 상태": { status: { name: "공개" } },
-      "관련 투어": { relation: [{ id: id(tourId) }] },
-      "MYBOX URL": { url: "https://mybox.naver.com/share/test" },
-      "링크 만료일": { date: expiry ? { start: expiry, end: null } : null },
-      "표시 순서": { number: n },
-    },
-  };
-}
 function api(sources, readBodies = []) {
   return async (address) => {
     const [, , kind, key] = new URL(address).pathname.split("/");
@@ -48,39 +34,14 @@ function api(sources, readBodies = []) {
     return Response.json({ results, has_more: false, next_cursor: null });
   };
 }
-test("공개된 완료 투어 중 기록 공개와 만료 조건을 통과한 앨범만 표시한다", async () => {
+test("완료 투어 본문은 기록 공개 승인을 따르고 링크를 보존한다", async () => {
   const bodies = [];
   const content = await readNotion(
     env,
-    api(
-      [
-        [
-          tour(10, "완료", true, true),
-          tour(11, "완료", false, true),
-          tour(12, "완료", true, false),
-          tour(13, "취소", true, true),
-        ],
-        [],
-        [
-          media(20, 10, "2026-11-24"),
-          media(21, 11, null),
-          media(22, 12, null),
-          media(23, 10, "2026-11-23"),
-        ],
-      ],
-      bodies,
-    ),
-    new Date("2026-11-23T20:00:00Z"),
-  );
-  assert.deepEqual(
-    content.media.map((m) => m.title),
-    ["앨범 20"],
+    api([[tour(10, "완료", true, true), tour(12, "완료", true, false)], []], bodies),
   );
   assert.deepEqual(bodies, [id(10)]);
-  assert.deepEqual(
-    content.tours.map((t) => t.slug),
-    ["tour-10", "tour-12"],
-  );
+  assert.deepEqual(content.tours.map((t) => t.slug), ["tour-10", "tour-12"]);
 });
 test("공개 투어 슬러그가 중복되면 빌드 데이터를 반환하지 않는다", async () => {
   await assert.rejects(
@@ -97,4 +58,21 @@ test("인증이나 API 조회가 실패하면 중단한다", async () => {
     readNotion(env, async () => new Response(null, { status: 403 })),
     /403/,
   );
+});
+test("투어 본문의 MYBOX 링크를 주소와 함께 보존한다", async () => {
+  const linked = async (address) => {
+    const [, , kind, key] = new URL(address).pathname.split("/");
+    if (kind === "databases") return Response.json({ data_sources: [{ id: key }] });
+    const results = kind === "blocks"
+      ? key === id(10) ? [{
+          id: id(30), type: "paragraph", has_children: false,
+          paragraph: { rich_text: [{ plain_text: "사진 폴더", href: "https://mybox.naver.com/share/test" }] },
+        }] : []
+      : key === id(1) ? [tour(10, "완료", true, true)] : [];
+    return Response.json({ results, has_more: false, next_cursor: null });
+  };
+  const result = await readNotion(env, linked);
+  assert.deepEqual(result.tours[0].body[0].parts, [
+    { text: "사진 폴더", href: "https://mybox.naver.com/share/test" },
+  ]);
 });

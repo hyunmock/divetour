@@ -1,30 +1,32 @@
 ---
 import type { Line } from "../lib/notion";
+import LinkedText from "./LinkedText.astro";
 interface Props {
   lines: Line[];
 }
 const { lines } = Astro.props;
-const groups: { kind: Line["kind"]; values: string[] }[] = [];
-for (const { kind, text } of lines) {
+const groups: { kind: Line["kind"]; values: Line[] }[] = [];
+for (const line of lines) {
+  const { kind } = line;
   const last = groups.at(-1);
   if (
     (kind === "bulleted_list_item" || kind === "numbered_list_item") &&
     last?.kind === kind
   )
-    last.values.push(text);
-  else groups.push({ kind, values: [text] });
+    last.values.push(line);
+  else groups.push({ kind, values: [line] });
 }
 ---
 
 <div class="prose">
   {groups.map(({ kind, values }) => {
     if (kind === "divider") return <hr />;
-    if (kind.startsWith("heading")) return <h2>{values[0]}</h2>;
+    if (kind.startsWith("heading")) return <h2><LinkedText line={values[0]} /></h2>;
     if (kind === "bulleted_list_item")
       return (
         <ul>
           {values.map((v) => (
-            <li>{v}</li>
+            <li><LinkedText line={v} /></li>
           ))}
         </ul>
       );
@@ -32,11 +34,11 @@ for (const { kind, text } of lines) {
       return (
         <ol>
           {values.map((v) => (
-            <li>{v}</li>
+            <li><LinkedText line={v} /></li>
           ))}
         </ol>
       );
-    if (kind === "quote") return <blockquote>{values[0]}</blockquote>;
-    return <p>{values[0]}</p>;
+    if (kind === "quote") return <blockquote><LinkedText line={values[0]} /></blockquote>;
+    return <p><LinkedText line={values[0]} /></p>;
   })}
 </div>

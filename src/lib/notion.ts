@@ -21,7 +21,7 @@ const lines = z.enum([
   "callout",
   "table_row",
 ]);
-export type Line = { kind: z.infer<typeof lines>; text: string };
+export type Line = { kind: z.infer<typeof lines>; text: string; parts?: { text: string; href?: string }[] };
 const title = z
   .object({ title: text })
   .transform((v) => z.string().trim().min(1).parse(v.title));
@@ -44,23 +44,24 @@ const date = z
   })
   .transform((v) => v.date);
 const slug = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
-const mybox = z.url().refine((value) => {
-  const u = new URL(value);
-  return (
-    u.protocol === "https:" &&
-    u.hostname === "mybox.naver.com" &&
-    !u.username &&
-    !u.password &&
-    !u.port &&
-    u.pathname !== "/"
-  );
-});
+const linkedText = z.array(z.object({
+  plain_text: z.string(),
+  href: z.string().nullable().optional(),
+})).transform((parts) => parts.map(({ plain_text, href }) => {
+  if (!href) return { text: plain_text };
+  const url = new URL(href);
+  if (url.protocol !== "https:" && url.protocol !== "http:")
+    throw new Error("지원하지 않는 링크 주소");
+  if (url.hostname === "mybox.naver.com" &&
+      (url.protocol !== "https:" || url.username || url.password || url.port || url.pathname === "/"))
+    throw new Error("MYBOX 공유 링크 형식 오류");
+  return { text: plain_text, href };
+}));
 type Env = Record<string, string | undefined>;
 
 export async function readNotion(
   env: Env,
   http: typeof fetch = fetch,
-  now = new Date(),
 ) {
   if (!env.NOTION_TOKEN) throw new Error("Notion 빌드 인증 정보가 필요합니다.");
   async function api(path: string, body?: object) {
@@ -133,8 +134,8 @@ export async function readNotion(
         const row = z.object({ cells: z.array(text) }).parse(b.table_row);
         result.push({ kind, text: row.cells.join(" · ") });
       } else {
-        const content = kind === "divider" ? "" : rich.parse(b[kind]);
-        result.push({ kind, text: content });
+        const parts = kind === "divider" ? [] : linkedText.parse(z.object({ rich_text: z.unknown() }).parse(b[kind]).rich_text);
+        result.push({ kind, text: parts.map((part) => part.text).join(""), parts });
       }
       if (b.has_children) result.push(...(await body(b.id)));
     }
@@ -183,43 +184,6 @@ export async function readNotion(
       body: answer,
     });
   }
-  const media = [];
-  const today = new Intl.DateTimeFormat("sv-SE", {
-    timeZone: "Asia/Seoul",
-  }).format(now);
-  for (const r of await query("NOTION_MEDIA_DATABASE_ID", {
-    property: "공개 상태",
-    status: { equals: "공개" },
-  })) {
-    const p = r.properties;
-    if (status.parse(p["공개 상태"]) !== "공개") continue;
-    const rel = z
-      .object({
-        relation: z.array(z.object({ id })),
-        has_more: z.boolean().optional(),
-      })
-      .parse(p["관련 투어"]);
-    if (rel.has_more || rel.relation.length !== 1) continue;
-    const tour = tours.find(
-      (t) => t.id === rel.relation[0].id && t.state === "완료" && t.archive,
-    );
-    if (!tour) continue;
-    const expiry = date.parse(p["링크 만료일"])?.start;
-    if (
-      expiry &&
-      (expiry.length === 10
-        ? expiry < today
-        : Date.parse(expiry) <= now.getTime())
-    )
-      continue;
-    media.push({
-      title: title.parse(p["제목"]),
-      url: z.object({ url: mybox }).parse(p["MYBOX URL"]).url,
-      tour: tour.slug,
-      order: order.parse(p["표시 순서"]),
-      expiry,
-    });
-  }
   async function page(key: string) {
     if (!env[key]) return [];
     const pageId = id.parse(env[key]);
@@ -240,7 +204,6 @@ export async function readNotion(
   return {
     tours,
     faq: faq.sort((a, b) => a.order - b.order),
-    media: media.sort((a, b) => a.order - b.order),
     about: await page("NOTION_ABOUT_PAGE_ID"),
     rules: await page("NOTION_RULES_PAGE_ID"),
   };

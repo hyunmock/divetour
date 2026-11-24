@@ -2,7 +2,6 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import TourCard from "../../components/TourCard.astro";
 import Body from "../../components/Body.astro";
-import MediaList from "../../components/MediaList.astro";
 import { content, href, displayDate } from "../../lib/content";
 export async function getStaticPaths() {
   const { tours } = await content();
@@ -10,7 +9,7 @@ export async function getStaticPaths() {
     (path) => ({ params: { path } }),
   );
 }
-const { tours, media } = await content();
+const { tours } = await content();
 const path = Astro.params.path;
 const tour = tours.find((t) => t.slug === path);
 const filters = [
@@ -43,14 +42,8 @@ const list = tours.filter((t) =>
           .join(" · ")}
       </p>
       <Body lines={tour.body} />
-      {tour.state === "완료" && tour.archive && (
-        <section>
-          <h2>사진·영상</h2>
-          <MediaList
-            heading="h3"
-            items={media.filter((m) => m.tour === tour.slug)}
-          />
-        </section>
+      {tour.body.some((line) => line.parts?.some((part) => part.href && new URL(part.href).hostname === "mybox.naver.com")) && (
+        <p>MYBOX 암호는 카카오톡 팀 채널에서 확인해 주세요.</p>
       )}
       <a href={href("tours/")}>투어 목록으로</a>
     </>
