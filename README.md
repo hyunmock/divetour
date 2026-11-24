@@ -62,6 +62,8 @@ Astro 프로젝트가 추가되면 개발, 검사 및 배포 명령을 이 문�
 3. 기존 콘텐츠를 Notion으로 이관
 4. Astro 홈페이지 구현
 5. Notion API 연동과 공개 데이터 검사
-6. GitHub Pages 자동 배포
+6. GitHub Actions에서 수동 게시하고 GitHub Pages에 배포
+
+위 순서는 Phase 1의 기본 홈페이지 출시 범위입니다. Phase 2에서는 홈페이지에 운영자 로그인, 게시 화면, 운영자 관리를 추가합니다. 세부 계획은 [프로젝트 인계 문서](docs/project-handoff.md#phase-2-운영자-관리와-게시-화면)에 있습니다.
 
 1~3단계의 이관 결과와 남은 확인 사항은 `docs/content-migration.md`에서 확인할 수 있습니다.
