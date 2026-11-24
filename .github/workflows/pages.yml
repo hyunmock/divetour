@@ -22,8 +22,21 @@ jobs:
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
         run: |
-          cp .env.example .env
-          sed -i '/^NOTION_TOKEN=/d' .env
+          while IFS='=' read -r key value; do
+            case "$key" in
+              NOTION_*_PAGE_ID) resource=pages ;;
+              NOTION_*_DATABASE_ID) resource=databases ;;
+              *) continue ;;
+            esac
+            export "$key=$value"
+            status=$(curl -sS -o /dev/null -w '%{http_code}' \
+              -H "Authorization: Bearer $NOTION_TOKEN" \
+              -H 'Notion-Version: 2025-09-03' \
+              "https://api.notion.com/v1/$resource/$value")
+            echo "$key HTTP $status"
+            if [ "$status" != 200 ]; then failed=1; fi
+          done < .env.example
+          test "${failed:-0}" = 0
           npm run build
       - uses: actions/upload-pages-artifact@v3
         with:
