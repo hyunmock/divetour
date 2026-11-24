@@ -1,0 +1,21 @@
+---
+import type { SiteContent } from "../lib/notion";
+import { href, displayDate } from "../lib/content";
+interface Props {
+  heading?: "h2" | "h3";
+  tour: SiteContent["tours"][number];
+}
+const { tour, heading: Heading = "h2" } = Astro.props;
+---
+
+<article class="card">
+  <small>{tour.state}</small>
+  <Heading>
+    <a href={href("tours/" + tour.slug + "/")}>{tour.title}</a>
+  </Heading>
+  <p>{tour.location}</p>
+  <p>
+    {tour.dates ? displayDate(tour.dates.start) : "일정 미정"}
+    {tour.dates?.end && " – " + displayDate(tour.dates.end)}
+  </p>
+</article>

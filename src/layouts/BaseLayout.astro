@@ -1,18 +1,63 @@
 ---
 import "../styles/global.css";
-
+import { href } from "../lib/content";
 interface Props {
   title: string;
 }
-
 const { title } = Astro.props;
+const links = [
+  ["모임 소개", "about/"],
+  ["가입 안내", "join/"],
+  ["투어", "tours/"],
+  ["사진·영상", "media/"],
+  ["회칙", "rules/"],
+  ["FAQ", "faq/"],
+];
 ---
+
 <!doctype html>
 <html lang="ko">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title}</title>
+    <title>{title} · 다이빙투어 모임</title>
   </head>
-  <body><slot /></body>
+  <body>
+    <a class="skip" href="#main">
+      본문으로 이동
+    </a>
+    <header>
+      <div class="bar">
+        <a class="brand" href={href()}>
+          다이빙투어 모임
+        </a>
+        <nav aria-label="주 메뉴">
+          {links.map(([label, path]) => (
+            <a
+              href={href(path)}
+              aria-current={
+                Astro.url.pathname.replace(/\/$/, "") ===
+                href(path).replace(/\/$/, "")
+                  ? "page"
+                  : undefined
+              }
+            >
+              {label}
+            </a>
+          ))}
+        </nav>
+      </div>
+    </header>
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <footer>
+      <div class="bar">
+        <a class="brand" href={href()}>
+          다이빙투어 모임
+        </a>
+        <a href={href("join/")}>가입 안내</a>
+      </div>
+    </footer>
+  </body>
 </html>

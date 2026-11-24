@@ -1,0 +1,43 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Body from "../components/Body.astro";
+import MediaList from "../components/MediaList.astro";
+import { content } from "../lib/content";
+export function getStaticPaths() {
+  return (["about", "join", "rules", "faq", "media"] as const).map(
+    (section) => ({ params: { section }, props: { section } }),
+  );
+}
+const { section } = Astro.props;
+const titles = {
+  about: "모임 소개",
+  join: "가입 안내",
+  rules: "회칙",
+  faq: "자주 묻는 질문",
+  media: "사진·영상",
+};
+const data = await content();
+const lines = section === "faq" || section === "media" ? [] : data[section];
+---
+
+<BaseLayout title={titles[section]}>
+  <h1>{titles[section]}</h1>
+  {section === "media" ? (
+    <MediaList items={data.media} />
+  ) : section === "faq" ? (
+    data.faq.length ? (
+      data.faq.map((f) => (
+        <details>
+          <summary>{f.title}</summary>
+          <Body lines={f.body} />
+        </details>
+      ))
+    ) : (
+      <p class="empty">현재 공개된 질문과 답변이 없습니다.</p>
+    )
+  ) : lines.length ? (
+    <Body lines={lines} />
+  ) : (
+    <p class="empty">공개를 준비하고 있습니다.</p>
+  )}
+</BaseLayout>
