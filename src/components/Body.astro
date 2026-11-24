@@ -1,0 +1,42 @@
+---
+import type { Line } from "../lib/notion";
+interface Props {
+  lines: Line[];
+}
+const { lines } = Astro.props;
+const groups: { kind: Line["kind"]; values: string[] }[] = [];
+for (const { kind, text } of lines) {
+  const last = groups.at(-1);
+  if (
+    (kind === "bulleted_list_item" || kind === "numbered_list_item") &&
+    last?.kind === kind
+  )
+    last.values.push(text);
+  else groups.push({ kind, values: [text] });
+}
+---
+
+<div class="prose">
+  {groups.map(({ kind, values }) => {
+    if (kind === "divider") return <hr />;
+    if (kind.startsWith("heading")) return <h2>{values[0]}</h2>;
+    if (kind === "bulleted_list_item")
+      return (
+        <ul>
+          {values.map((v) => (
+            <li>{v}</li>
+          ))}
+        </ul>
+      );
+    if (kind === "numbered_list_item")
+      return (
+        <ol>
+          {values.map((v) => (
+            <li>{v}</li>
+          ))}
+        </ol>
+      );
+    if (kind === "quote") return <blockquote>{values[0]}</blockquote>;
+    return <p>{values[0]}</p>;
+  })}
+</div>

@@ -2,7 +2,7 @@
 
 다이빙투어 모임의 소개, 투어 일정, 회칙, FAQ와 완료된 투어의 사진·영상 링크를 제공하기 위한 정적 홈페이지 저장소입니다.
 
-기존 문서와 이미지 자산 정리, Notion 콘텐츠 구조 설계와 기존 콘텐츠 이관을 완료했습니다. Astro와 TypeScript 기반의 임시 홈페이지를 실행할 수 있습니다. 다음 단계는 홈페이지 UI와 정적 페이지 구현입니다.
+기존 문서와 이미지 자산 정리, Notion 콘텐츠 구조 설계와 기존 콘텐츠 이관을 완료했습니다. Astro가 빌드 시 Notion에서 공개 승인된 자료를 읽어 가입 안내를 포함한 모임 안내, 투어, FAQ, 회칙 페이지를 생성합니다. 사진·영상은 해당 완료 투어의 상세 페이지에서 MYBOX 폴더 링크로 공유합니다.
 
 ## 콘텐츠와 서비스의 역할
 
@@ -50,14 +50,14 @@ rg 'Version|개정|v[0-9]' docs/archive
 find public -type f -maxdepth 3
 ```
 
-Node.js 24에서 다음 명령을 사용합니다. 개발 서버의 홈페이지 경로는 `/divetour/`입니다.
+Node.js 24를 사용합니다. 로컬에서 먼저 `.env.example`을 `.env`로 복사하고, 대상 페이지 및 데이터베이스를 읽을 수 있는 연동의 토큰을 로컬 비밀 설정으로 주입합니다. 예시에는 대상 ID만 있습니다. 일반 페이지의 공개 표시 방법은 [Notion 스키마](docs/notion-schema.md#일반-페이지-공개)를 참고하세요. 개발 서버의 홈페이지 경로는 `/divetour/`입니다.
 
 ```sh
 npm ci
 npm run dev
 ```
 
-`npm run check`로 타입을 검사하고 `npm run build`로 정적 파일을 `dist/`에 생성합니다. `npm run preview`로 빌드 결과를 로컬에서 확인합니다.
+`npm test`로 공개 조건을, `npm run check`로 타입을 검사하고 `npm run build`로 정적 파일을 `dist/`에 생성합니다. `npm run preview`로 빌드 결과를 로컬에서 확인합니다.
 
 ## 보안 원칙
 
