@@ -30,9 +30,6 @@ const checked = z
   .object({ checkbox: z.boolean() })
   .transform((v) => v.checkbox);
 const status = z.object({ status: name }).transform((v) => v.status.name);
-const order = z
-  .object({ number: z.number().nullable() })
-  .transform((v) => v.number ?? Infinity);
 const date = z
   .object({
     date: z
@@ -171,19 +168,6 @@ export async function readNotion(
   tours.sort((a, b) =>
     (a.dates?.start ?? "9999").localeCompare(b.dates?.start ?? "9999"),
   );
-  const faq = [];
-  for (const r of await query("NOTION_FAQ_DATABASE_ID", approved)) {
-    const p = r.properties;
-    if (!checked.parse(p["공개 여부"])) continue;
-    const answer = await body(r.id);
-    if (!answer.some((v) => v.text.trim()))
-      throw new Error("공개 FAQ 답변 누락");
-    faq.push({
-      title: title.parse(p["질문"]),
-      order: order.parse(p["표시 순서"]),
-      body: answer,
-    });
-  }
   async function page(key: string) {
     if (!env[key]) return [];
     const pageId = id.parse(env[key]);
@@ -203,7 +187,7 @@ export async function readNotion(
   }
   return {
     tours,
-    faq: faq.sort((a, b) => a.order - b.order),
+    faq: await page("NOTION_FAQ_PAGE_ID"),
     about: await page("NOTION_ABOUT_PAGE_ID"),
     rules: await page("NOTION_RULES_PAGE_ID"),
   };

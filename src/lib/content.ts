@@ -8,7 +8,7 @@ export function content() {
       [
         "TOKEN",
         "TOURS_DATABASE_ID",
-        "FAQ_DATABASE_ID",
+        "FAQ_PAGE_ID",
         "ABOUT_PAGE_ID",
         "RULES_PAGE_ID",
       ].map((s) => {

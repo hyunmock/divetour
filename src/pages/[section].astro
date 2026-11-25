@@ -14,23 +14,12 @@ const titles = {
   faq: "자주 묻는 질문",
 };
 const data = await content();
-const lines = section === "faq" ? [] : data[section];
+const lines = data[section];
 ---
 
 <BaseLayout title={titles[section]}>
   <h1>{titles[section]}</h1>
-  {section === "faq" ? (
-    data.faq.length ? (
-      data.faq.map((f) => (
-        <details>
-          <summary>{f.title}</summary>
-          <Body lines={f.body} />
-        </details>
-      ))
-    ) : (
-      <p class="empty">현재 공개된 질문과 답변이 없습니다.</p>
-    )
-  ) : lines.length ? (
+  {lines.length ? (
     <Body lines={lines} />
   ) : (
     <p class="empty">공개를 준비하고 있습니다.</p>

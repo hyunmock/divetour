@@ -19,8 +19,7 @@ a {
   color: var(--accent);
   text-underline-offset: 0.25em;
 }
-a:focus-visible,
-summary:focus-visible {
+a:focus-visible {
   outline: 3px solid #ba5600;
   outline-offset: 4px;
 }
@@ -118,8 +117,7 @@ li {
   gap: 1rem;
 }
 .empty,
-.card,
-details {
+.card {
   padding: 1.25rem;
   border: 1px solid var(--line);
   border-radius: 0.6rem;
@@ -141,13 +139,6 @@ details {
 }
 .section-head {
   margin-top: 2rem;
-}
-summary {
-  cursor: pointer;
-  font-weight: 650;
-}
-details + details {
-  margin-top: 0.6rem;
 }
 footer .bar {
   font-size: 0.9rem;

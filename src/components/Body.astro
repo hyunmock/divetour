@@ -21,7 +21,10 @@ for (const line of lines) {
 <div class="prose">
   {groups.map(({ kind, values }) => {
     if (kind === "divider") return <hr />;
-    if (kind.startsWith("heading")) return <h2><LinkedText line={values[0]} /></h2>;
+    if (kind.startsWith("heading")) {
+      const Heading = kind === "heading_3" ? "h3" : "h2";
+      return <Heading><LinkedText line={values[0]} /></Heading>;
+    }
     if (kind === "bulleted_list_item")
       return (
         <ul>

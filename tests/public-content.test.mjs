@@ -6,7 +6,6 @@ const id = (n) => n.toString(16).padStart(32, "0");
 const env = {
   NOTION_TOKEN: "test-only",
   NOTION_TOURS_DATABASE_ID: id(1),
-  NOTION_FAQ_DATABASE_ID: id(2),
 };
 const title = (plain_text) => ({ title: [{ plain_text }] });
 const rich = (plain_text) => ({ rich_text: [{ plain_text }] });
@@ -75,4 +74,53 @@ test("투어 본문의 MYBOX 링크를 주소와 함께 보존한다", async () 
   assert.deepEqual(result.tours[0].body[0].parts, [
     { text: "사진 폴더", href: "https://mybox.naver.com/share/test" },
   ]);
+});
+function block(n, type, plain_text) {
+  return {
+    id: id(n),
+    type,
+    has_children: false,
+    [type]: { rich_text: [{ plain_text, href: null }] },
+  };
+}
+function faqHttp(blocks) {
+  return async (address) => {
+    const url = new URL(address);
+    const [, , kind, key] = url.pathname.split("/");
+    if (kind === "databases")
+      return Response.json({ data_sources: [{ id: key }] });
+    const results =
+      kind === "blocks" && key === id(2)
+        ? url.searchParams.get("page_size") === "1"
+          ? blocks.slice(0, 1)
+          : blocks
+        : [];
+    return Response.json({ results, has_more: false, next_cursor: null });
+  };
+}
+test("FAQ 페이지는 공개 승인 문단을 빼고 제목 단계를 유지한다", async () => {
+  const result = await readNotion(
+    { ...env, NOTION_FAQ_PAGE_ID: id(2) },
+    faqHttp([
+      block(21, "paragraph", "홈페이지 공개 승인"),
+      block(22, "heading_2", "모임 및 가입"),
+      block(23, "heading_3", "이 방은 어떤 모임인가요?"),
+      block(24, "paragraph", "소규모 모임입니다."),
+    ]),
+  );
+  assert.deepEqual(
+    result.faq.map((line) => [line.kind, line.text]),
+    [
+      ["heading_2", "모임 및 가입"],
+      ["heading_3", "이 방은 어떤 모임인가요?"],
+      ["paragraph", "소규모 모임입니다."],
+    ],
+  );
+});
+test("공개 승인 문단이 없으면 FAQ를 비운다", async () => {
+  const result = await readNotion(
+    { ...env, NOTION_FAQ_PAGE_ID: id(2) },
+    faqHttp([block(21, "paragraph", "자주 묻는 질문입니다.")]),
+  );
+  assert.deepEqual(result.faq, []);
 });
