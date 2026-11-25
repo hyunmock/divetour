@@ -137,6 +137,28 @@ li {
 .prose li {
   white-space: pre-line;
 }
+.prose img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 1rem 0;
+}
+.prose .table-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+.prose table {
+  border-collapse: collapse;
+  width: max-content;
+}
+.prose th,
+.prose td {
+  border: 1px solid var(--line);
+  padding: 0.45rem 0.7rem;
+  text-align: start;
+  vertical-align: top;
+}
 .section-head {
   margin-top: 2rem;
 }

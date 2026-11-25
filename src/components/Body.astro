@@ -1,6 +1,7 @@
 ---
 import type { Line } from "../lib/notion";
 import LinkedText from "./LinkedText.astro";
+import { href } from "../lib/content";
 interface Props {
   lines: Line[];
 }
@@ -10,7 +11,7 @@ for (const line of lines) {
   const { kind } = line;
   const last = groups.at(-1);
   if (
-    (kind === "bulleted_list_item" || kind === "numbered_list_item") &&
+    (kind === "bulleted_list_item" || kind === "numbered_list_item" || kind === "table_row") &&
     last?.kind === kind
   )
     last.values.push(line);
@@ -21,6 +22,39 @@ for (const line of lines) {
 <div class="prose">
   {groups.map(({ kind, values }) => {
     if (kind === "divider") return <hr />;
+    if (kind === "image")
+      return <img src={href(values[0].src ?? "")} alt={values[0].text} />;
+    if (kind === "file")
+      return (
+        <p>
+          <a href={href(values[0].src ?? "")}>{values[0].text}</a>
+        </p>
+      );
+    if (kind === "table_row")
+      return (
+        <div class="table-wrap">
+          <table>
+            {values.map((row) => (
+              <tr>
+                {row.cells?.map((cell) => {
+                  const Cell = row.header ? "th" : "td";
+                  return (
+                    <Cell>
+                      <LinkedText
+                        line={{
+                          kind: "paragraph",
+                          text: cell.map((part) => part.text).join(""),
+                          parts: cell,
+                        }}
+                      />
+                    </Cell>
+                  );
+                })}
+              </tr>
+            ))}
+          </table>
+        </div>
+      );
     if (kind.startsWith("heading")) {
       const Heading = kind === "heading_3" ? "h3" : "h2";
       return <Heading><LinkedText line={values[0]} /></Heading>;

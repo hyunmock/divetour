@@ -37,7 +37,7 @@
 
 GitHub 저장소와 연결해 코드 변경도 빌드할 수 있게 둡니다. Deploy Hook 이름은 `notion-publish-hook`으로 합니다. 훅 URL과 Notion 토큰은 비밀값이며 저장소에 적지 않습니다. 웹훅은 HMAC 서명 검증을 붙입니다.
 
-환경 변수는 `NOTION_TOKEN`, `NOTION_TOURS_DATABASE_ID`, `NOTION_FAQ_PAGE_ID`, `NOTION_ABOUT_PAGE_ID`, `NOTION_RULES_PAGE_ID`입니다. 예시 파일에는 토큰을 넣지 않습니다.
+환경 변수는 `NOTION_TOKEN`, `NOTION_TOURS_DATABASE_ID`, `NOTION_FAQ_PAGE_ID`, `NOTION_ABOUT_PAGE_ID`, `NOTION_RULES_PAGE_ID`, `NOTION_TOUR_DETAILS_PAGE_ID`입니다. 예시 파일에는 토큰을 넣지 않습니다.
 
 ## 페이지 구성
 
