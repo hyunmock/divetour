@@ -40,6 +40,11 @@ const checked = z
   .object({ checkbox: z.boolean() })
   .transform((v) => v.checkbox);
 const status = z.object({ status: name }).transform((v) => v.status.name);
+const choice = z
+  .object({ select: z.object({ name: z.string() }).nullable() })
+  .transform((v) => v.select?.name ?? "");
+const optionalText = (value: unknown) => (value == null ? "" : rich.parse(value));
+const optionalChoice = (value: unknown) => (value == null ? "" : choice.parse(value));
 const date = z
   .object({
     date: z
@@ -280,6 +285,10 @@ export async function readNotion(
       archive,
       location: rich.parse(p["장소"]),
       dates: date.parse(p["일정"]),
+      guideForm: optionalChoice(p["인솔 형태"]),
+      instructor: optionalText(p["인솔강사"]),
+      proposer: optionalText(p["제안자"]),
+      shop: optionalText(p["다이빙숍"]),
       showBody: state !== "완료" || archive,
     });
   }
@@ -301,6 +310,10 @@ export async function readNotion(
       archive: tour.archive,
       location: tour.location,
       dates: tour.dates,
+      guideForm: tour.guideForm,
+      instructor: tour.instructor,
+      proposer: tour.proposer,
+      shop: tour.shop,
       body,
     });
   }

@@ -1,7 +1,7 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import TourCard from "../../components/TourCard.astro";
 import Body from "../../components/Body.astro";
+import TourTable from "../../components/TourTable.astro";
 import { content, href, displayDate } from "../../lib/content";
 export async function getStaticPaths() {
   const { tours } = await content();
@@ -59,13 +59,7 @@ const list = tours.filter((t) =>
           </a>
         ))}
       </nav>
-      {list.length ? (
-        <div class="grid">
-          {list.map((t) => (
-            <TourCard tour={t} />
-          ))}
-        </div>
-      ) : (
+      {list.length ? <TourTable tours={list} /> : (
         <p class="empty">현재 공개된 투어가 없습니다.</p>
       )}
     </>

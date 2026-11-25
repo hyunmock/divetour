@@ -1,10 +1,8 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import TourCard from "../components/TourCard.astro";
+import TourTable from "../components/TourTable.astro";
 import { content, href } from "../lib/content";
-const upcoming = (await content()).tours
-  .filter((t) => t.state !== "완료")
-  .slice(0, 3);
+const upcoming = (await content()).tours.filter((t) => t.state !== "완료");
 ---
 
 <BaseLayout title="홈">
@@ -12,7 +10,7 @@ const upcoming = (await content()).tours
     <div>
       <h1>다이빙투어 모임</h1>
       <p>투어 일정과 참여 방법을 확인하세요.</p>
-      <a class="button" href={href("tours/")}>
+      <a class="button" href={href("tours/upcoming/")}>
         투어 둘러보기 →
       </a>
     </div>
@@ -23,11 +21,7 @@ const upcoming = (await content()).tours
       <a href={href("tours/upcoming/")}>전체 보기</a>
     </div>
     {upcoming.length ? (
-      <div class="grid">
-        {upcoming.map((t) => (
-          <TourCard heading="h3" tour={t} />
-        ))}
-      </div>
+      <TourTable tours={upcoming} />
     ) : (
       <p class="empty">현재 공개된 예정 투어가 없습니다.</p>
     )}

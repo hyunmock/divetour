@@ -1,0 +1,49 @@
+---
+import type { SiteContent } from "../lib/notion";
+import { href, displayDate } from "../lib/content";
+interface Props {
+  tours: SiteContent["tours"];
+}
+const { tours } = Astro.props;
+const schedule = (tour: SiteContent["tours"][number]) =>
+  tour.dates
+    ? [displayDate(tour.dates.start), tour.dates.end && displayDate(tour.dates.end)]
+        .filter(Boolean)
+        .join(" – ")
+    : "일정 미정";
+---
+
+<div class="schedule">
+  <table>
+    <thead>
+      <tr>
+        <th scope="col">투어명</th>
+        <th scope="col">장소</th>
+        <th scope="col">일정</th>
+        <th scope="col">상태</th>
+        <th scope="col">인솔강사 여부</th>
+        <th scope="col">인솔강사</th>
+        <th scope="col">제안자</th>
+        <th scope="col">다이빙숍</th>
+      </tr>
+    </thead>
+    <tbody>
+      {
+        tours.map((tour) => (
+          <tr>
+            <td>
+              <a href={href("tours/" + tour.slug + "/")}>{tour.title}</a>
+            </td>
+            <td>{tour.location}</td>
+            <td>{schedule(tour)}</td>
+            <td>{tour.state}</td>
+            <td>{tour.guideForm}</td>
+            <td>{tour.instructor}</td>
+            <td>{tour.proposer}</td>
+            <td>{tour.shop}</td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</div>

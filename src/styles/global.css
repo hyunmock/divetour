@@ -130,6 +130,36 @@ li {
 .tabs {
   margin-bottom: 1.5rem;
 }
+.schedule {
+  max-width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 0.6rem;
+  background: white;
+}
+.schedule table {
+  width: 100%;
+  min-width: 64rem;
+  border-collapse: collapse;
+}
+.schedule th,
+.schedule td {
+  padding: 0.8rem 0.9rem;
+  text-align: start;
+  vertical-align: top;
+  border-bottom: 1px solid var(--line);
+}
+.schedule th {
+  font-size: 0.85rem;
+  background: #eef5f2;
+}
+.schedule tr:last-child td {
+  border-bottom: 0;
+}
+.schedule a {
+  font-weight: 700;
+  text-decoration: none;
+}
 .prose {
   max-width: 48rem;
 }

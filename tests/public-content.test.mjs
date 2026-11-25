@@ -90,8 +90,33 @@ test("상세 페이지 본문만 가져오고 행의 이관 문단은 버린다"
     blocks: { [id(40)]: [paragraph(41, "공개 본문")] },
   }));
   assert.deepEqual(content.tours[0].body.map((line) => line.text), ["공개 본문"]);
+  assert.equal(content.tours[0].guideForm, "");
+  assert.equal(content.tours[0].instructor, "");
+  assert.equal(content.tours[0].proposer, "");
+  assert.equal(content.tours[0].shop, "");
   assert.equal(seen.some((item) => item.startsWith("blocks " + id(40))), true);
   assert.equal(seen.filter((item) => item.startsWith("blocks " + id(10))).length, 1);
+});
+test("투어 목록에 인솔 형태, 인솔강사, 제안자, 다이빙숍을 담는다", async () => {
+  const row = tour(10, "확정", true, false);
+  row.properties["인솔 형태"] = { select: { name: "인솔강사" } };
+  row.properties["인솔강사"] = rich("김다이브");
+  row.properties["제안자"] = rich("이제안");
+  row.properties["다이빙숍"] = rich("블루샵");
+  const content = await readNotion(env, notion({
+    tours: [row],
+    first: { [id(10)]: [mention(id(40))] },
+    blocks: { [id(40)]: [paragraph(41, "공개 본문")] },
+  }));
+  assert.deepEqual(
+    {
+      guideForm: content.tours[0].guideForm,
+      instructor: content.tours[0].instructor,
+      proposer: content.tours[0].proposer,
+      shop: content.tours[0].shop,
+    },
+    { guideForm: "인솔강사", instructor: "김다이브", proposer: "이제안", shop: "블루샵" },
+  );
 });
 test("부모 페이지가 투어 상세가 아니면 빌드를 중단한다", async () => {
   await assert.rejects(
